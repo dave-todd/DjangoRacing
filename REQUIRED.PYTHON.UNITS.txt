@@ -1,0 +1,10 @@
+PYTHON :
+https://python.org/downloads/
+Obviously you need to have Python, this was developed with Python 3.7 (2019.03.15)
+
+#windows VirtualEnvWrapper : pip install virtualenvwrapper-win
+Django : pip install django
+Beautiful Soup : pip install beautifulsoup4
+Html5Lib : pip install html5lib
+Requests : pip install requests
+Selenium : pip install selenium

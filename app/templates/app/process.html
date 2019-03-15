@@ -1,0 +1,72 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="stylesheet" type="text/css" href="https://www.w3schools.com/w3css/4/w3.css">
+	<style>
+		div.formstyle { max-width:500px; margin: auto; border: 3px solid #73AD21; }
+	</style>
+	<title>RWWA Process</title>
+</head>
+
+<body>
+
+	<h1 class="w3-container w3-center">Enter A RWWA Meeting Number </h1>
+	
+	<div class="w3-card-4 formstyle">
+		<div class="w3-container w3-green">
+			<h2>Type in the meeting number</h2>
+		</div>
+		<br>
+		<form class="w3-container" action="" method="get">
+			<input type="number" name="meeting" id="meeting" class="w3-input w3-border"><br>
+			<input class="w3-button w3-grey w3-ripple w3-round-large" type="submit" value="GO">
+		</form><br>
+	</div><br><br>
+
+	{% if active %}
+	
+		<div align="center">
+			<div style="max-width:1200px;">
+				<h1 class="w3-container">Result Set For Meeting {{meeting}}</h1>
+				<h2>Start Date : {{start_date}}</h2>
+				<h2>Events : {{race_count}}</h2>
+		
+				{% for race in data %}
+		
+					<table class="w3-table-all w3-hoverable w3-card-4">
+						<tr> 
+							<th>Number</th>
+							<th>Horse</th> 
+							<th>Barrier</th>
+							<th>Rider</th>
+							<th>Trainer</th>
+							<th>Odds</th>
+						</tr>
+		
+						{% for horse in race %}
+			
+							<tr>
+			
+								{% for item in horse %}
+			
+									<td>{{item}}</td>
+			
+								{% endfor %}
+				
+							</tr>
+			
+						{% endfor %}
+		
+					</table><br><br>
+			
+				{% endfor %}
+			
+			</div>
+		</div>	
+		
+	{% endif %}
+
+</body>
+</html>
