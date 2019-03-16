@@ -1,30 +1,33 @@
 import webbrowser, sys, requests, bs4, re, datetime, time, html5lib
+from datetime import date
 
-def GetStartDate(meeting):
-    address = "http://www.rwwa.com.au/cris/meeting.aspx?meeting=" + meeting
-    res = requests.get(address)
-    try:
-        res.raise_for_status()
-    except Exception as exc:
-        return('There was a problem: %s' % (exc))
-    racenoSoup = bs4.BeautifulSoup(res.text, "html5lib")
-    temp = str(racenoSoup.find("span", {"id": "ctl00_ContentPlaceHolderMain_labelTitle"}))
-    temp = temp[51:-7]
-    temp = temp[-10:]
-    retVal = datetime.datetime.strptime(temp, "%d/%m/%Y").date()
-    return(retVal)
-	
-def GetRaceCount(meeting):
-    address = "http://www.rwwa.com.au/cris/meeting.aspx?meeting=" + meeting
-    res = requests.get(address)
-    try:
-        res.raise_for_status()
-    except Exception as exc:
-        return('There was a problem: %s' % (exc))
-    racenoSoup = bs4.BeautifulSoup(res.text, "html5lib")
-    table = racenoSoup.find("table", {"class": "tblcris"})
-    raceList = table.findAll("tr")
-    return (len(raceList)-1)
+def GetMeetingData(meeting):
+	startDate = date.today()
+	raceCount = 0
+	address = "http://www.rwwa.com.au/cris/meeting.aspx?meeting=" + str(meeting)
+	res = requests.get(address)
+	try:
+		res.raise_for_status()
+	except Exception as exc:
+		return(startDate, raceCount)
+	racenoSoup = bs4.BeautifulSoup(res.text, "html5lib")
+
+	try: # extracting start date
+		temp = str(racenoSoup.find("span", {"id": "ctl00_ContentPlaceHolderMain_labelTitle"}))
+		temp = temp[51:-7]
+		temp = temp[-10:]
+		startDate = datetime.datetime.strptime(temp, "%d/%m/%Y").date()
+	except:
+		startDate = date.today()
+
+	try: # extracting race count
+		table = racenoSoup.find("table", {"class": "tblcris"})
+		raceList = table.findAll("tr")
+		raceCount = len(raceList)-1
+	except:
+		raceCount = 0
+
+	return(startDate, raceCount)
 	
 def GetHorseNum(garbage):
     temp = garbage[4:-5] # remove <td> </td> from ends
@@ -71,15 +74,14 @@ def GetHorseOdds(garbage):
 	
 def ProcessRace(meeting, raceNum):
 	race=[]
-	address = "http://www.rwwa.com.au/cris/racefield.aspx?meeting="+meeting+"&race="+str(raceNum)
+	address = "http://www.rwwa.com.au/cris/racefield.aspx?meeting="+str(meeting)+"&race="+str(raceNum)
 	res = requests.get(address)
-	
 	try:
 		res.raise_for_status()
-	except Exception as exc:
-		return('There was a problem: %s' % (exc))
-	
+	except:
+		return race
 	racenoSoup = bs4.BeautifulSoup(res.text, "html5lib")
+	
 	table = racenoSoup.find("table", {"class":"tblcris raceField"})
 	rows = table.findAll("tr")
 	
@@ -114,9 +116,8 @@ def ProcessRace(meeting, raceNum):
 			
 	return(race)
 
-def ProcessRWWA(meeting):
+def ProcessRWWA(meeting, raceCount):
 	retVal=[]
-	raceCount = GetRaceCount(meeting)
 	for raceNum in range(1, raceCount+1):
 		raceData = ProcessRace(meeting, raceNum)
 		retVal.append(raceData)

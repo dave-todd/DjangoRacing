@@ -1,7 +1,9 @@
 from django.urls import path
-from . import views
+from app import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('process', views.process, name='process'),
+    path('', views.Index),
+    path('process', views.Process),
+	path('process/<int:meetingNumber>', views.REST_Process),
+	path('database', views.Database),
 ]
