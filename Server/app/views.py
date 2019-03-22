@@ -48,7 +48,13 @@ def REST_Process(request, meetingNumber):
 				for race in races:
 					raceResponse = {}
 					raceNumber += 1
+					
+					horseCount = 0
+					for horse in race:
+						horseCount += 1
+					
 					raceResponse['raceNumber'] = raceNumber
+					raceResponse['horseCount'] = horseCount
 
 					for horse in race:
 						horseResponse = {}
